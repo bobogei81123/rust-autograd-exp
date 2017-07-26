@@ -1,0 +1,7 @@
+[package]
+authors = ["Meteor <bobogei81123@gmail.com>"]
+name = "autograd"
+version = "0.1.0"
+
+[dependencies]
+ndarray = "0.10.0"
