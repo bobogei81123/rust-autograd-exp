@@ -12,7 +12,7 @@ impl Tensor {
     pub fn new(array: ArrayD<f64>) -> Tensor {
         Tensor::CpuTensor(CpuTensor { data: array })
     }
-    pub fn get_data(&self) -> &ArrayD<f64> {
+    pub fn data(&self) -> &ArrayD<f64> {
         match self {
             &Tensor::CpuTensor(ref t) => &t.data
         }
