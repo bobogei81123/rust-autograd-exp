@@ -9,8 +9,8 @@ pub trait Op {
     fn get_parents(&self) -> Vec<RefVar>;
 }
 
-mod add;
-pub use self::add::*;
+mod basic;
+pub use self::basic::*;
 
 mod sum;
 pub use self::sum::*;

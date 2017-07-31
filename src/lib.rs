@@ -23,19 +23,22 @@ pub use gradient::*;
 #[cfg(test)]
 mod tests {
     use super::*;
+    extern crate itertools;
+    use self::itertools::all;
     #[test]
     fn it_works() {
         let a = variable(dyarr![[1., 2.], [3., 4.]]);
-        let b = add(add(a.clone(), a.clone()), a.clone());
-        let c = add(b.clone(), a.clone());
-        let d = sum(c);
-        //let b = ConstantVar::from_array(dyarr![[3., 4.], [5., 6.]]);
-        //let c = add(a, b);
-        //let d = sum(c);
-        println!("Result: ${} = ${}", d.borrow().id(), d.borrow().data());
+        let b = &a * &a;
+        let c = a + 1.;
+        let d = c / b;
+        let e = sum(d);
 
-        let res = get_gradient(d);
-        println!("Res = ${:?}", res);
-        //assert!(false);
+        assert!((e.borrow().data()[[]] - 3.5069444444444446).abs() < 1e-10);
+
+        let res = &get_gradient(e)[&0];
+        let correct_res = arr2(&[[-3. , -0.5], [-0.18518519, -0.09375]]);
+
+        let err = correct_res - res;
+        assert!(all(err.iter(), |x| x.abs() < 1e-6));
     }
 }

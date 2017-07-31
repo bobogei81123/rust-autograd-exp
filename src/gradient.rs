@@ -29,7 +29,7 @@ pub fn get_gradient(target: RefVar) -> HashMap<usize, ArrayD<f64>> {
 
     let mut queue: VecDeque<RefVar> = VecDeque::new();
 
-    grad_result.insert(target.borrow().id(), dyarr![1.]);
+    grad_result.insert(target.borrow().id(), ArrayD::<f64>::zeros(vec![]) + arr0(1.));
     queue.push_back(target.clone());
 
     while !queue.is_empty() {
@@ -42,6 +42,7 @@ pub fn get_gradient(target: RefVar) -> HashMap<usize, ArrayD<f64>> {
             let pid = par.borrow().id();
             let mut prev_grad = grad_result.get_mut(&pid).unwrap();
             *prev_grad += &grad;
+            //println!("{}: {} += {}",  cur.id(), pid, &grad);
 
             let mut cnt = deps.get_mut(&pid).unwrap();
             *cnt -= 1;

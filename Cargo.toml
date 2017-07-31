@@ -4,4 +4,6 @@ name = "autograd"
 version = "0.1.0"
 
 [dependencies]
+derive_more = "0.6.2"
+itertools = "0.6.1"
 ndarray = "0.10.0"

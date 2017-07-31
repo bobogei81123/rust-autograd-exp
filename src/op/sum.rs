@@ -18,14 +18,14 @@ impl SumOp {
         let v1 = v1.borrow();
 
         let var = Rc::new(RefCell::new(Variable {
-            tensor: Tensor::new(dyarr![v1.data().scalar_sum()]),
+            tensor: Tensor::new(ArrayD::<f64>::zeros(vec![]) + arr0(v1.data().scalar_sum())),
             meta: VarMeta::new(),
             op: Box::new(SumOp {
                 parent: parent,
             }),
         }));
         println!("${} = sum(${})", var.borrow().id(), v1.id());
-        var
+        var.into()
     }
 }
 
