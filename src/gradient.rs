@@ -7,17 +7,17 @@ pub fn get_gradient(target: RefVar) -> HashMap<usize, ArrayD<f64>> {
     let mut queue: VecDeque<RefVar> = VecDeque::new();
     let mut grad_result: HashMap<usize, ArrayD<f64>> = HashMap::new();
 
-    deps.insert(target.borrow().id(), 0);
+    deps.insert(target.id(), 0);
     queue.push_back(target.clone());
 
     while !queue.is_empty() {
         let cur = queue.pop_front().unwrap();
-        let cur = cur.borrow();
+        let cur = cur;
 
         grad_result.insert(cur.id(), ArrayD::zeros(cur.data().shape()));
 
         for par in cur.op.get_parents() {
-            match deps.entry(par.borrow().id()) {
+            match deps.entry(par.id()) {
                 hash_map::Entry::Occupied(mut x) => { *x.get_mut() += 1; }
                 hash_map::Entry::Vacant(x) => {
                     x.insert(1);
@@ -29,17 +29,16 @@ pub fn get_gradient(target: RefVar) -> HashMap<usize, ArrayD<f64>> {
 
     let mut queue: VecDeque<RefVar> = VecDeque::new();
 
-    grad_result.insert(target.borrow().id(), ArrayD::<f64>::zeros(vec![]) + arr0(1.));
+    grad_result.insert(target.id(), ArrayD::<f64>::zeros(vec![]) + arr0(1.));
     queue.push_back(target.clone());
 
     while !queue.is_empty() {
         let cur = queue.pop_front().unwrap();
-        let cur = cur.borrow();
         let my_grad = grad_result.get(&cur.id()).unwrap().clone();
         let back_list = cur.op.backward(&my_grad);
 
         for (par, grad) in cur.op.get_parents().iter().zip(back_list) {
-            let pid = par.borrow().id();
+            let pid = par.id();
             let mut prev_grad = grad_result.get_mut(&pid).unwrap();
             *prev_grad += &grad;
             //println!("{}: {} += {}",  cur.id(), pid, &grad);

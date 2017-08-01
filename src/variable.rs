@@ -37,27 +37,27 @@ impl Variable {
 
 //pub type RefVar = Rc<RefCell<Variable>>;
 #[derive(Clone)]
-pub struct RefVar(Rc<RefCell<Variable>>);
+pub struct RefVar(Rc<Variable>);
 
 impl Deref for RefVar {
-    type Target = Rc<RefCell<Variable>>;
+    type Target = Rc<Variable>;
     fn deref(&self) -> &Self::Target {
         &self.0
     }
 }
 
-impl From<Rc<RefCell<Variable>>> for RefVar {
-    fn from(x: Rc<RefCell<Variable>>) -> RefVar {
+impl From<Rc<Variable>> for RefVar {
+    fn from(x: Rc<Variable>) -> RefVar {
         RefVar(x)
     }
 }
 
 pub fn variable(array: ArrayD<f64>) -> RefVar {
-    Rc::new(RefCell::new(Variable {
+    Rc::new(Variable {
         tensor: Tensor::new(array),
         meta: VarMeta::new(),
         op: Box::new(op::ConstantOp {})
-    })).into()
+    }).into()
 }
 
 macro_rules! impl_refvar_op {

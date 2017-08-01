@@ -17,18 +17,16 @@ macro_rules! impl_basic_op_for_Op {
         impl $op_name {
             fn apply(v1: RefVar, v2: RefVar) -> RefVar {
                 let parents = vec![v1.clone(), v2.clone()];
-                let v1 = v1.borrow();
-                let v2 = v2.borrow();
 
-                let var = Rc::new(RefCell::new(Variable {
+                let var = Rc::new(Variable {
                     tensor: Tensor::new(v1.data() $op v2.data()),
                     meta: VarMeta::new(),
                     op: Box::new($op_name {
                         parents: parents,
                     })
-                }));
+                });
                 println!(concat!("${} = ${} ", stringify!($op), " ${}"), 
-                         var.borrow().id(), v1.id(), v2.id());
+                         var.id(), v1.id(), v2.id());
                 var.into()
             }
         }
@@ -42,32 +40,32 @@ macro_rules! impl_basic_op_for_Op {
 impl_basic_op_for_Op!(
     AddOp, add, +,
     |s: &AddOp, grad| s.parents.iter().map(|par| {
-        ArrayD::<f64>::from_elem(par.borrow().data().shape(), 1.) * grad
+        ArrayD::<f64>::from_elem(par.data().shape(), 1.) * grad
     }).collect()
 );
 
 impl_basic_op_for_Op!(
     SubOp, sub, -,
     |s: &SubOp, grad| vec![
-        ArrayD::<f64>::from_elem(s.parents[0].borrow().data().shape(), 1.) * grad,
-        ArrayD::<f64>::from_elem(s.parents[1].borrow().data().shape(), -1.) * grad
+        ArrayD::<f64>::from_elem(s.parents[0].data().shape(), 1.) * grad,
+        ArrayD::<f64>::from_elem(s.parents[1].data().shape(), -1.) * grad
     ]
 );
 
 impl_basic_op_for_Op!(
     MulOp, mul, *,
     |s: &MulOp, grad| vec![
-        s.parents[1].borrow().data() * grad,
-        s.parents[0].borrow().data() * grad
+        s.parents[1].data() * grad,
+        s.parents[0].data() * grad
     ]
 );
 
 impl_basic_op_for_Op!(
     DivOp, div, /,
     |s: &DivOp, grad| vec![
-        1.0 / s.parents[1].borrow().data(),
-        s.parents[1].borrow().data().map(|x| -1.0 / (x * x))
-        * s.parents[0].borrow().data() * grad
+        1.0 / s.parents[1].data(),
+        s.parents[1].data().map(|x| -1.0 / (x * x))
+        * s.parents[0].data() * grad
     ]
 );
 
@@ -87,11 +85,11 @@ impl Op for AddConstOp {
 
 impl AddConstOp {
     fn apply(v1: RefVar, v2: f64) -> RefVar {
-        Rc::new(RefCell::new(Variable {
-            tensor: Tensor::new(v1.borrow().data() + v2),
+        Rc::new(Variable {
+            tensor: Tensor::new(v1.data() + v2),
             meta: VarMeta::new(),
             op: Box::new(AddConstOp { parent: v1.clone() }), 
-        })).into()
+        }).into()
     }
 }
 

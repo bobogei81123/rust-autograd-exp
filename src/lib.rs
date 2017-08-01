@@ -33,7 +33,7 @@ mod tests {
         let d = c / b;
         let e = sum(d);
 
-        assert!((e.borrow().data()[[]] - 3.5069444444444446).abs() < 1e-10);
+        assert!((e.data()[[]] - 3.5069444444444446).abs() < 1e-10);
 
         let res = &get_gradient(e)[&0];
         let correct_res = arr2(&[[-3. , -0.5], [-0.18518519, -0.09375]]);
